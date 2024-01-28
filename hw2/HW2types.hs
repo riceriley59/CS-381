@@ -2,7 +2,7 @@ module HW2types where
 
 -- Type for Trees
 data Tree = Node Int Tree Tree | Leaf
-	deriving Show
+   deriving Show
 
 --Trees
 tree1 = Node 5 Leaf Leaf
