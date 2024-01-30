@@ -1,4 +1,4 @@
--- Riley Rice
+-- Riley Rice (934127342)
 -- riceri@oregonstate.edu
 -- CS381 - Programming Language Fundamentals HW2 
 -- 1-29-2024
