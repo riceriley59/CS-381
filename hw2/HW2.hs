@@ -18,7 +18,7 @@ sizeTree (Node _ l r) = sizeTree l + sizeTree r + 1
 -- This function gets the height of a binary tree. 
 -- It works by doing a traversal of each sub tree adding 1 for every
 -- recursive level and then takes the max once it comes back up the tree 
--- counting the ammount of levels.
+-- counting the amount of levels.
 height :: Tree -> Int
 height Leaf = -1
 height (Node _ l r) = 1 + max (height l) (height r)  
@@ -92,8 +92,9 @@ convertBST tree = fromList (collectValues tree)
 -- This function counts the number of vertices and edges on a given Graph.
 -- We first go through all the vertices and then look for unique vertices and 
 -- compile the unique vertices into a list. Once we have compiled that list we have
--- the answers we need. The number of vertices will be equal to the list we just made and 
--- the edges will be equal to the lenght of the graph's list of vertices (non-unique).
+-- the answers we need. The number of vertices will be equal to the length of the list 
+-- we just made and the edges will be equal to the length of the graph's list of 
+-- vertices (non-unique).
 numVE :: Graph -> (Int, Int)
 numVE graph = (numVertices, numEdges) where 
   collectVertices :: Graph -> [Vertex] -> [Vertex]
