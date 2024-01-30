@@ -6,6 +6,7 @@
 module HW2 where 
 
 import HW2types
+import Data.List (nub, sort, union)
 
 -- This function get's the number of nodes in a binary tree.
 -- It works by doing a post-order traversal of the tree and adding 1 for 
@@ -29,22 +30,28 @@ treeSum :: Tree -> Int
 treeSum Leaf = 0
 treeSum (Node x l r) = x  + treeSum l + treeSum r
 
--- TODO --
-
 -- This is an operator overload for == when dealing with our Tree data structure.
--- It works by summing up the node values of each tree using our treeSum function and
--- comparing the values to see if the trees both have the same amount of values in there.
-instance Eq Tree where 
-  Leaf == Leaf = True
-  tree1 == tree2 = treeSum tree1 == treeSum tree2
+-- It works by turning the two trees into a list and then checking to see if both the 
+-- trees have the same count of values. If they do then they are equal, we also have some 
+-- other cases handled in here.
+instance Eq Tree where
+  tree1 == tree2 = equalValues tree1 tree2
 
+treeToList :: Tree -> [Int]
+treeToList Leaf = []
+treeToList (Node val left right) = nub (sort (val : treeToList left ++ treeToList right))
+
+equalValues :: Tree -> Tree -> Bool
+equalValues tree1 tree2 = 
+  nub (sort (treeToList tree1 `union` treeToList tree2)) == nub (sort (treeToList tree1))
+
+-- This function merges two arbitrary trees into one single tree with all values 
+-- included from the first two trees. It works by
 mergeTrees :: Tree -> Tree -> Tree 
 mergeTrees Leaf tree2 = tree2
 mergeTrees tree1 Leaf = tree1
 mergeTrees (Node val left right) (Node val2 left2 right2) = 
   Node val (mergeTrees left (Node val2 Leaf Leaf)) (mergeTrees right (Node val2 Leaf Leaf)) 
-
--- END TODO -- 
 
 -- This function checks a given tree to see if it's a valid binary search tree.
 -- It works by using a recursive helper function that checks to make sure the given value 
