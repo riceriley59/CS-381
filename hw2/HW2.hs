@@ -39,19 +39,28 @@ instance Eq Tree where
 
 treeToList :: Tree -> [Int]
 treeToList Leaf = []
-treeToList (Node val left right) = nub (sort (val : treeToList left ++ treeToList right))
+treeToList (Node val l r) = nub (sort (val : treeToList l ++ treeToList r))
 
 equalValues :: Tree -> Tree -> Bool
 equalValues tree1 tree2 = 
   nub (sort (treeToList tree1 `union` treeToList tree2)) == nub (sort (treeToList tree1))
 
 -- This function merges two arbitrary trees into one single tree with all values 
--- included from the first two trees. It works by
+-- included from the first two trees. It works by turning the two trees into a list
+-- we then union those lists and then create a new tree with the list of nodes. This
+-- will create a really unbalanced or right heavy tree, but it works.
+createTree :: [Int] -> Tree
+createTree nodes = foldr insertTree Leaf nodes
+
+insertTree :: Int -> Tree -> Tree
+insertTree val Leaf = (Node val Leaf Leaf)
+insertTree val (Node val2 l r) 
+  | val == val2 = Node val2 l r
+  | val > val2 = Node val2 l (insertTree val r)
+  | val < val2 = Node val2 (insertTree val l) r
+
 mergeTrees :: Tree -> Tree -> Tree 
-mergeTrees Leaf tree2 = tree2
-mergeTrees tree1 Leaf = tree1
-mergeTrees (Node val left right) (Node val2 left2 right2) = 
-  Node val (mergeTrees left (Node val2 Leaf Leaf)) (mergeTrees right (Node val2 Leaf Leaf)) 
+mergeTrees tree1 tree2 = createTree ((treeToList tree1) `union` (treeToList tree2))
 
 -- This function checks a given tree to see if it's a valid binary search tree.
 -- It works by using a recursive helper function that checks to make sure the given value 
@@ -61,11 +70,11 @@ isBST :: Tree -> Bool
 isBST Leaf = True
 isBST tree = isBSTHelper tree (minBound :: Int) (maxBound :: Int) where 
   isBSTHelper Leaf _ _ = True
-  isBSTHelper (Node val left right) minValue maxValue = 
+  isBSTHelper (Node val l r) minValue maxValue = 
     val > minValue
       && val < maxValue
-      && isBSTHelper left minValue val 
-      && isBSTHelper right val maxValue
+      && isBSTHelper l minValue val 
+      && isBSTHelper r val maxValue
 
 -- This function converts a given tree into a valid binary search tree.
 -- It works by using a few different helper functions. First it takes all the values 
@@ -77,17 +86,17 @@ convertBST tree = fromList (collectValues tree)
   where
     collectValues :: Tree -> [Int]
     collectValues Leaf = []
-    collectValues (Node val left right) =
-      collectValues left ++ [val] ++ collectValues right
+    collectValues (Node val l r) =
+      collectValues l ++ [val] ++ collectValues r
 
     fromList :: [Int] -> Tree
     fromList = foldr insertBST Leaf
 
     insertBST :: Int -> Tree -> Tree
     insertBST x Leaf = Node x Leaf Leaf
-    insertBST x (Node val left right)
-      | x <= val = Node val (insertBST x left) right
-      | otherwise = Node val left (insertBST x right)
+    insertBST x (Node val l r)
+      | x <= val = Node val (insertBST x l) r
+      | otherwise = Node val l (insertBST x r)
 
 -- This function counts the number of vertices and edges on a given Graph.
 -- We first go through all the vertices and then look for unique vertices and 
@@ -98,8 +107,8 @@ convertBST tree = fromList (collectValues tree)
 numVE :: Graph -> (Int, Int)
 numVE graph = (numVertices, numEdges) where 
   collectVertices :: Graph -> [Vertex] -> [Vertex]
-  collectVertices [] acc = acc
-  collectVertices ((u, v):edges) acc = collectVertices edges (collectUnique u (collectUnique v acc))
+  collectVertices [] vertList = vertList
+  collectVertices ((u, v):edges) vertList = collectVertices edges (collectUnique u (collectUnique v vertList))
 
   collectUnique :: Vertex -> [Vertex] -> [Vertex]
   collectUnique x xs
