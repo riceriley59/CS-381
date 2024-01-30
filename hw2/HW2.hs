@@ -29,6 +29,8 @@ treeSum :: Tree -> Int
 treeSum Leaf = 0
 treeSum (Node x l r) = x  + treeSum l + treeSum r
 
+-- TODO --
+
 -- This is an operator overload for == when dealing with our Tree data structure.
 -- It works by summing up the node values of each tree using our treeSum function and
 -- comparing the values to see if the trees both have the same amount of values in there.
@@ -41,6 +43,8 @@ mergeTrees Leaf tree2 = tree2
 mergeTrees tree1 Leaf = tree1
 mergeTrees (Node val left right) (Node val2 left2 right2) = 
   Node val (mergeTrees left (Node val2 Leaf Leaf)) (mergeTrees right (Node val2 Leaf Leaf)) 
+
+-- END TODO -- 
 
 -- This function checks a given tree to see if it's a valid binary search tree.
 -- It works by using a recursive helper function that checks to make sure the given value 
