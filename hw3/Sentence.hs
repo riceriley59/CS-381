@@ -12,21 +12,22 @@ module Sentence where
 --   <verb>		->  `chase` | `cuddle` | `hug` | `scare`
 --   <adj>		->	`sad` | `small` | `big` | `happy`
 
-data Sentence = NVN Noun Verb Noun 
-  | NV Noun Verb  -- finish noun verb sentence
-  | And Sentence Sentence -- finish sentence and sentence
-  | End
+data Sentence = NVN Noun Verb Noun -- noun verb noun sentence
+  | NV Noun Verb  -- noun verb sentence
+  | And Sentence Sentence -- sentence and sentence
+  | End -- end of sentence, in other words could be seen as epsilon in grammar
   deriving (Eq,Show)
 
-data Adj = Sad | Small | Big | Happy
+-- represents adjective in sentence
+data Adj = Sad | Small | Big | Happy -- possible values of adjective
   deriving (Eq,Show)
 
 data Noun = NP Adj Noun  -- Noun phrase
-  | NAnd Noun Noun  -- Finish noun and noun
+  | NAnd Noun Noun  -- noun and noun
   | Bears | Cats | Dogs | Goats -- list of nouns
   deriving (Eq,Show)
 
-data Verb = Chase | Cuddle | Hug | Scare 
+data Verb = Chase | Cuddle | Hug | Scare -- list of verbs
   deriving (Eq,Show)
 
 
@@ -71,6 +72,7 @@ buildNAnd noun1 noun2 = NAnd noun1 noun2
 -- | conjunction [ex1, ex2]
 -- | And (NVN Cats Hug Dogs) (NVN (NP Small Cats) Hug Dogs)
 -- | The End is used if no sentences are given
+-- constructs all sentences in list together using and strings
 conjunction :: [Sentence] -> Sentence
 conjunction []     = End
 conjunction [x]    = x
@@ -112,6 +114,7 @@ prettyAdj Happy = "happy"
 -- | Does the sentence contain only chase and scare?
 -- | isMean ex2 => False
 -- | isMean ex3 => True
+-- set values for all possible matches
 isMean :: Sentence -> Bool
 isMean (NVN _ Chase _)  = True
 isMean (NVN _ Scare _)  = True
@@ -125,12 +128,15 @@ isMean (End)            = False
 -- |Count the number of words in a sentence
 -- | wordCount ex4
 --    6
+-- Handle all different sentence scenarios and then properly count the amount of words
 wordCount :: Sentence -> Int
-wordCount (NVN noun1 _ noun2) = 1 + countNoun noun1 + countNoun noun2
+wordCount (NVN noun1 _ noun2) = 1 + countNoun noun1 + countNoun noun2 
 wordCount (NV noun1 _)    = 1 + countNoun noun1
 wordCount (And l r)   = wordCount l + wordCount r + 1
 wordCount (End)       = 0
 
+-- In order to properly count the word count we also need to 
+-- count the nouns since in the grammar a noun can be more than one word.
 countNoun :: Noun -> Int 
 countNoun (NP _ noun) = countNoun noun + 1 
 countNoun (NAnd noun1 noun2) = countNoun noun1 + countNoun noun2 + 1
