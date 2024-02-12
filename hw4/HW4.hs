@@ -71,7 +71,7 @@ semCmd (IFELSE _ p2 ) ((B False):s) = sem p2 s
 -- complete duplicate DUP to duplicate the top value on the
 -- stack both integers and boolean values can be duplicated
 -- if the stack is empty return Nothing
-semCmd DUP (v:s) = Just (v:v:s) 
+semCmd DUP (x:s) = Just (x:x:s) 
 semCmd DUP _ = Nothing
 
 -- Catch any undefined commands or errors
