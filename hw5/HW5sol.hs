@@ -1,3 +1,8 @@
+-- Homework 5
+-- Name:  Riley Rice
+-- Date: 2-21-2024
+-- CS 381 - Programming Language Funadmentals
+
 module HW5sol where 
 
 import HW5types
