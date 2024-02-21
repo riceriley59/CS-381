@@ -65,8 +65,8 @@ runS :: [Prog] -> [Stack]-> IO ()
 runS [] _ = putStrLn " "
 runS _ [] = putStrLn " "
 runS (p:ps)(s:ss) = do 
-						putStrLn (prettySRun p s)
-						runS ps ss
+            putStrLn (prettySRun p s)
+            runS ps ss
 runAllTests:: IO()
 runAllTests = runS pList sList
 
