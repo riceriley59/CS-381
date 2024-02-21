@@ -65,6 +65,12 @@ sem (c:cs) s = case semCmd c s of
                 Just s' -> sem cs s'
                 Nothing -> Nothing   -- stop execution on Nothing		
 
+-- This function handles the definition of each command in our 
+-- stack language's Rank. Its formatted into a tuple of Integers 
+-- such as (n, m) where n is the amount of elements a command 
+-- takes off of the stack and m is the amount of elements a command 
+-- puts on the stack. This allows us to make sure that programs are valid 
+-- and won't over take from a stack. 
 rankC :: Cmd -> CmdRank
 rankC ADD  = (2, 1)
 rankC MULT = (2, 1)
@@ -79,8 +85,18 @@ rankC (LDB _) = (0, 1)
 rankC DUP   = (1, 2)
 rankC (POP k) = (k, 0)
 
-rankC (IFELSE _ _) = (0, 0)
+-- We can give the IFELSE command a rank of (0, 1) since 
+-- the IFELSE statment takes off a boolean from the stack and 
+-- the rank of each branch will be calculated later.
+rankC (IFELSE _ _) = (0, 1)
 
+-- This function calculates the rank of a function. It starts with an initial rank 
+-- and then goes through each command and updates the rank based on the rank of that command 
+-- which is given by rankC. If there is a point where a command is invalid and will take too 
+-- much off of the stack it will return a RankError. We also handle a special condition for 
+-- the IFELSE command where we calculate the rank of each branch of the IFELSE statement and then 
+-- assign the rank of the minimum rank of the two branches after running. If there is a RankError in 
+-- either of the branches then we assign a RankError to the whole program.
 rankP :: Prog -> Rank -> Maybe Rank
 rankP [] r = Just r
 rankP (IFELSE p1 p2 : xs) r = case (rankP p1 (r - 1), rankP p2 (r - 1)) of 
@@ -91,11 +107,11 @@ rankP (x:xs) r = case rankC x of
             else Nothing
 
 
--- to run call sem and replace nothing with Error and
--- remove the Just from the stack to return S stack
+-- First runs rankP on program and then sem and replaces Nothing with a RankError if it's returned from our call 
+-- to rankP or a TypeError if it's returned from a command run by sem.
 run :: Prog -> Stack -> Result
 run p s = case rankP p (length s) of 
-  Nothing -> RankError
+  Nothing -> RankError -- If our rank function returns Nothing from the program then a RankError
   Just r -> case sem p s of 
-    Just s' -> A s'
-    Nothing -> TypeError
+    Just s' -> A s' -- A final stack is returned and program has finished
+    Nothing -> TypeError -- If any of our commands return Nothing then there was a TypeError
