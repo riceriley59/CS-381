@@ -1,19 +1,19 @@
 -- Homework 5
--- Name:  Riley Rice
+-- Name: Riley Rice
 -- Date: 2-21-2024
 -- CS 381 - Programming Language Funadmentals
 
 module HW5sol where 
 
 import HW5types
-import Data.Maybe
+import Data.Maybe ()
 
 -- This function handles the correct semantics of this program and language 
 -- making sure that the stack works as expected, and throwing a nothing in return 
 -- in some cases, hence the Maybe Stack.
 semCmd :: Cmd -> Stack -> Maybe Stack
-semCmd (LDI i) s = Just((I i):s) -- load an integer onto the stack
-semCmd (LDB b) s = Just((B b):s) -- load a boolean onto the stack
+semCmd (LDI i) s = Just(I i : s) -- load an integer onto the stack
+semCmd (LDB b) s = Just(B b :s) -- load a boolean onto the stack
 
 -- Add the top values on the stack and push result onto the stack
 -- If there aren't two integers return Nothing
@@ -28,7 +28,7 @@ semCmd MULT _ = Nothing
 
 -- If top value is less than next push True onto stack
 -- otherwise push false
-semCmd LEQ ((I i):(I i'):s) = Just ((B(i <= i')):s)
+semCmd LEQ ((I i):(I i'):s) = Just (B(i <= i') : s)
 semCmd LEQ _ = Nothing
 
 -- If top of stack is True execute first program
@@ -117,6 +117,4 @@ rankP (x:xs) r = case rankC x of
 run :: Prog -> Stack -> Result
 run p s = case rankP p (length s) of 
   Nothing -> RankError -- If our rank function returns Nothing from the program then a RankError
-  Just r -> case sem p s of 
-    Just s' -> A s' -- A final stack is returned and program has finished
-    Nothing -> TypeError -- If any of our commands return Nothing then there was a TypeError
+  Just r -> maybe TypeError A (sem p s) -- If any of our commands return Nothing then there was a TypeError if not return Stack
