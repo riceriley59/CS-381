@@ -113,3 +113,24 @@ countClasses(StudentID, StudentName, Number) :-
     length(Classes, Number).
 
 %Problem 2: Path in a weighted DAG: 
+edge(a, b, 2).
+edge(b, c, 6).
+edge(c, e, 9).
+edge(e, f, 8).
+edge(a, d, 1).
+edge(d, f, 7).
+edge(d, c, 10).
+
+% Predicate to find paths from S to F
+dagPaths(S, F, Path, Cost) :-
+    dagPathsHelper(S, F, [S], Path, Cost).
+
+% Base case: Reached the destination
+dagPathsHelper(F, F, _, [F], 0).
+
+% Recursive case: Traverse the graph
+dagPathsHelper(S, F, Visited, [S | Path], Cost) :-
+    edge(S, Next, EdgeCost),
+    \+ member(Next, Visited),  % Ensure no duplicate vertices in the path
+    dagPathsHelper(Next, F, [Next | Visited], Path, RestCost),
+    Cost is EdgeCost + RestCost.
