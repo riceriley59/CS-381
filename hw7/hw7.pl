@@ -175,6 +175,8 @@ edge(e, f, 8).
 edge(a, d, 1).
 edge(d, f, 7).
 edge(d, c, 10).
+edge(b, e, 2).
+edge(a, e, 1).
 
 /*
     Predicate to find paths from S to F, Also maps dagPaths/4 to dagPathHelper/5 
